@@ -52,7 +52,7 @@ uint8_t canx_send_data(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t *data, uint
 {
 	CAN_TxHeaderTypeDef	tx_header;
 
-//    uint32_t mailbox;
+    uint32_t mailbox;
 	tx_header.StdId = id;
 	tx_header.ExtId = 0;
 	tx_header.IDE   = 0;

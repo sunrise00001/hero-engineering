@@ -13,11 +13,7 @@
 #include "tool.h"
 
 
-motorpara_t dm4310para = {DM_4310_PMAX,DM_4310_VMAX,DM_4310_TMAX};
-motorpara_t dm4340para = {DM_4340_PMAX,DM_4340_VMAX,DM_4340_TMAX};
-motorpara_t dm8009para = {DM_8009_PMAX,DM_8009_VMAX,DM_8009_TMAX};
-
-void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float kd_set,float pos_set,float vel_set,float tor_set)
+void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float kd_set,float pos_set,float vel_set,float tor_set,float PMAX,float VMAX,float TMAX)
 {
     memset(motor, 0, sizeof(*motor));
     motor->ctrl.id = id;
@@ -29,28 +25,48 @@ void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float
     motor->ctrl.vel_set =vel_set;
     motor->ctrl.cur_set =0;
     motor->ctrl.tor_set =tor_set;
+    motor->para.PMAX = PMAX;
+    motor->para.VMAX = VMAX;
+    motor->para.TMAX = TMAX;
 }
 
-void dm_motor_ctrl(hcan_t* hcan,dm_motor_t *motor,motorpara_t *para,float kp,float kd,float pos,float vel,float tor)
-{
+/**
+ *      计算斜坡
+ *      can发送
+ *
+ **/
 
-        switch(motor->ctrl.mode)
-        {
-        case mit_mode:
-            motor->ramp_out= s_ramp_calc(&motor->ramp_data,pos);
-            mit_ctrl(hcan, motor,para,motor->ctrl.id,kp,kd,motor->ramp_out,vel,tor);
-            break;
-        case pos_mode:
-            pos_ctrl(hcan, motor->ctrl.id, pos, vel);
-            break;
-        case vel_mode:
-            vel_ctrl(hcan, motor->ctrl.id,vel);
-            break;
-        case psi_mode:
-            psi_ctrl(hcan, motor->ctrl.id,pos, vel, 0);
-            break;
-        }
-osDelay(1);
+void dm_motor_ctrl(dm_motor_t *motor,float kp,float kd,float pos,float vel,float tor)
+{
+        motor->ramp_out= s_ramp_calc(&motor->ramp_data,pos);
+
+        CAN_TxHeaderTypeDef	tx_header;
+        uint32_t mailbox;
+        uint8_t data[8];
+
+        tx_header.StdId =motor->ctrl.id;
+        tx_header.IDE   = 0;
+        tx_header.RTR   = 0;
+        tx_header.DLC   = 0x08;
+
+        uint32_t pos_tmp = float_to_uint(motor->ramp_out, -motor->para.PMAX, motor->para.PMAX, 16);
+        uint32_t vel_tmp = float_to_uint(vel, -motor->para.VMAX, motor->para.VMAX, 12);
+        uint32_t tor_tmp = float_to_uint(tor, -motor->para.TMAX, motor->para.TMAX, 12);
+        uint32_t kp_tmp  = float_to_uint(kp,  KP_MIN, KP_MAX, 12);
+        uint32_t kd_tmp  = float_to_uint(kd,  KD_MIN, KD_MAX, 12);
+
+        data[0] = (pos_tmp >> 8);
+        data[1] = pos_tmp;
+        data[2] = (vel_tmp >> 4);
+        data[3] = ((vel_tmp&0xF)<<4)|(kp_tmp>>8);
+        data[4] = kp_tmp;
+        data[5] = (kd_tmp >> 4);
+        data[6] = ((kd_tmp&0xF)<<4)|(tor_tmp>>8);
+        data[7] = tor_tmp;
+
+        HAL_CAN_AddTxMessage(&hcan1,&tx_header,data,&mailbox);
+
+        osDelay(1);
 }
 
 
@@ -63,12 +79,6 @@ void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data)
     dm_motor[ARM5].ctrl.pos_set = custom_robot_data->mt_ang.angle[4]*PI/180.f;
     dm_motor[ARM6].ctrl.pos_set = custom_robot_data->mt_ang.angle[5]*PI/180.f;
 
-    // dm_motor[ARM1].ramp_out = s_ramp_calc(&dm_motor[ARM1].ramp_data,dm_motor[ARM1].ctrl.pos_set);
-    // dm_motor[ARM2].ramp_out = s_ramp_calc(&dm_motor[ARM2].ramp_data,dm_motor[ARM2].ctrl.pos_set);
-    // dm_motor[ARM3].ramp_out = s_ramp_calc(&dm_motor[ARM3].ramp_data,dm_motor[ARM3].ctrl.pos_set);
-    // dm_motor[ARM4].ramp_out = s_ramp_calc(&dm_motor[ARM4].ramp_data,dm_motor[ARM4].ctrl.pos_set);
-    // dm_motor[ARM5].ramp_out = s_ramp_calc(&dm_motor[ARM5].ramp_data,dm_motor[ARM5].ctrl.pos_set);
-    // dm_motor[ARM6].ramp_out = s_ramp_calc(&dm_motor[ARM6].ramp_data,dm_motor[ARM6].ctrl.pos_set);
 }
 
 void can1_rx_callback(void)
@@ -132,26 +142,6 @@ void dm_motor_disable(hcan_t* hcan, dm_motor_t *motor)
     dm_motor_clear_para(motor);
 }
 
-
-/*---------------------电机控制&反馈------------------------------------*/
-void dm_motor_ctrl_send(hcan_t* hcan, dm_motor_t *motor,motorpara_t* para)
-{
-    switch(motor->ctrl.mode)
-    {
-    case mit_mode:
-        mit_ctrl(hcan, motor,para, motor->ctrl.id, motor->ctrl.kp_set, motor->ctrl.kd_set, motor->ctrl.pos_set, motor->ctrl.vel_set, motor->ctrl.tor_set);
-        break;
-    case pos_mode:
-        pos_ctrl(hcan, motor->ctrl.id, motor->ctrl.pos_set, motor->ctrl.vel_set);
-        break;
-    case vel_mode:
-        vel_ctrl(hcan, motor->ctrl.id, motor->ctrl.vel_set);
-        break;
-    case psi_mode:
-        psi_ctrl(hcan, motor->ctrl.id,motor->ctrl.pos_set, motor->ctrl.vel_set, motor->ctrl.cur_set);
-        break;
-    }
-}
 
 
 void dm_4310_motor_feedback(dm_motor_t *motor, uint8_t *rx_data)

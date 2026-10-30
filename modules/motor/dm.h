@@ -80,6 +80,7 @@ typedef struct
 {
     motor_feedback_t feedback;
     motor_ctrl_t ctrl;
+    motorpara_t para;
     ramp_type_t ramp_data;     //斜坡数据
     float ramp_out;               //斜坡输出
 }dm_motor_t;
@@ -89,9 +90,8 @@ extern motorpara_t dm4310para;
 extern motorpara_t dm4340para;
 extern motorpara_t dm8009para;
 void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data);
-void dm_motor_ctrl(hcan_t* hcan,dm_motor_t *motor,motorpara_t *para,float kp,float kd,float pos,float vel,float tor);
-void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float kd_set,float pos_set,float vel_set,float tor_set);
-void dm_motor_ctrl_send(hcan_t* hcan, dm_motor_t *motor,motorpara_t* para);
+void dm_motor_ctrl(dm_motor_t *motor,float kp,float kd,float pos,float vel,float tor);
+void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float kd_set,float pos_set,float vel_set,float tor_set,float PMAX,float VMAX,float TMAX);
 void dm_motor_enable(hcan_t* hcan,dm_motor_t* motor);
 void dm_motor_disable(hcan_t* hcan, dm_motor_t *motor);
 void dm_4310_motor_feedback(dm_motor_t *motor, uint8_t *rx_data);
