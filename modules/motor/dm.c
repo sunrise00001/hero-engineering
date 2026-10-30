@@ -6,6 +6,7 @@
 #include <string.h>
 
 
+#include "arm_ctrl.h"
 #include "can.h"
 #include "cmsis_os2.h"
 #include "referee.h"
@@ -36,7 +37,8 @@ void dm_motor_ctrl(hcan_t* hcan,dm_motor_t *motor,motorpara_t *para,float kp,flo
         switch(motor->ctrl.mode)
         {
         case mit_mode:
-            mit_ctrl(hcan, motor,para,motor->ctrl.id,kp,kd,pos,vel,tor);
+            motor->ramp_out= s_ramp_calc(&motor->ramp_data,pos);
+            mit_ctrl(hcan, motor,para,motor->ctrl.id,kp,kd,motor->ramp_out,vel,tor);
             break;
         case pos_mode:
             pos_ctrl(hcan, motor->ctrl.id, pos, vel);
@@ -51,31 +53,23 @@ void dm_motor_ctrl(hcan_t* hcan,dm_motor_t *motor,motorpara_t *para,float kp,flo
 osDelay(1);
 }
 
-void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data,uint8_t index)
-{
-    switch (motor->ctrl.id)
-    {
-    case 1:
-        motor->ctrl.pos_set =custom_robot_data->mt_ang.angle[index]*PI/180.f;
-        break;
-    case 2:
-        motor->ctrl.pos_set =custom_robot_data->mt_ang.angle[index]*PI/180.f;
-        break;
-    case 3:
-        motor->ctrl.pos_set =custom_robot_data->mt_ang.angle[index]*PI/180.f;
-        break;
-    case 4:
-        motor->ctrl.pos_set =custom_robot_data->mt_ang.angle[index]*PI/180.f;
-        break;
-    case 5:
-        motor->ctrl.pos_set =custom_robot_data->mt_ang.angle[index]*PI/180.f;
-        break;
-    case 6:
-        motor->ctrl.pos_set =custom_robot_data->mt_ang.angle[index]*PI/180.f;
-        break;
-    }
-}
 
+void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data)
+{
+    dm_motor[ARM1].ctrl.pos_set = custom_robot_data->mt_ang.angle[0]*PI/180.f;
+    dm_motor[ARM2].ctrl.pos_set = custom_robot_data->mt_ang.angle[1]*PI/180.f;
+    dm_motor[ARM3].ctrl.pos_set = custom_robot_data->mt_ang.angle[2]*PI/180.f;
+    dm_motor[ARM4].ctrl.pos_set = custom_robot_data->mt_ang.angle[3]*PI/180.f;
+    dm_motor[ARM5].ctrl.pos_set = custom_robot_data->mt_ang.angle[4]*PI/180.f;
+    dm_motor[ARM6].ctrl.pos_set = custom_robot_data->mt_ang.angle[5]*PI/180.f;
+
+    // dm_motor[ARM1].ramp_out = s_ramp_calc(&dm_motor[ARM1].ramp_data,dm_motor[ARM1].ctrl.pos_set);
+    // dm_motor[ARM2].ramp_out = s_ramp_calc(&dm_motor[ARM2].ramp_data,dm_motor[ARM2].ctrl.pos_set);
+    // dm_motor[ARM3].ramp_out = s_ramp_calc(&dm_motor[ARM3].ramp_data,dm_motor[ARM3].ctrl.pos_set);
+    // dm_motor[ARM4].ramp_out = s_ramp_calc(&dm_motor[ARM4].ramp_data,dm_motor[ARM4].ctrl.pos_set);
+    // dm_motor[ARM5].ramp_out = s_ramp_calc(&dm_motor[ARM5].ramp_data,dm_motor[ARM5].ctrl.pos_set);
+    // dm_motor[ARM6].ramp_out = s_ramp_calc(&dm_motor[ARM6].ramp_data,dm_motor[ARM6].ctrl.pos_set);
+}
 
 void can1_rx_callback(void)
 {

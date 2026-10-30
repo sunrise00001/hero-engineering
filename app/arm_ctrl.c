@@ -9,7 +9,7 @@
 #include "RemoteController.h"
 
 
-dm_motor_t dm_motor[8] = {0};
+dm_motor_t dm_motor[7] = {0};
 void control_update(void);
 
 void dm_cmd_init(void)
@@ -33,7 +33,12 @@ void dm_cmd_init(void)
     osDelay(20);
     dm_motor_enable(&hcan1,&dm_motor[ARM6]);
 
-    
+    s_ramp_init(&dm_motor[ARM1].ramp_data,RAMP_K,dm_motor[ARM1].ctrl.pos_set,dm_motor[ARM1].feedback.pos);
+	s_ramp_init(&dm_motor[ARM2].ramp_data,RAMP_K,dm_motor[ARM2].ctrl.pos_set,dm_motor[ARM2].feedback.pos);
+	s_ramp_init(&dm_motor[ARM3].ramp_data,RAMP_K,dm_motor[ARM3].ctrl.pos_set,dm_motor[ARM3].feedback.pos);
+	s_ramp_init(&dm_motor[ARM4].ramp_data,RAMP_K,dm_motor[ARM4].ctrl.pos_set,dm_motor[ARM4].feedback.pos);
+	s_ramp_init(&dm_motor[ARM5].ramp_data,RAMP_K,dm_motor[ARM5].ctrl.pos_set,dm_motor[ARM5].feedback.pos);
+	s_ramp_init(&dm_motor[ARM6].ramp_data,RAMP_K,dm_motor[ARM6].ctrl.pos_set,dm_motor[ARM6].feedback.pos);
 };
 
 
@@ -43,12 +48,7 @@ void ARM_CTRL(void *argument)//ÈÎÎñº¯Êý
     dm_cmd_init();
 	  while(1){
 
-	  	dm_motor_upgrate(&dm_motor[ARM1],&custom_robot_data,ARM1_INDEX);
-	  	dm_motor_upgrate(&dm_motor[ARM2],&custom_robot_data,ARM2_INDEX);
-	  	dm_motor_upgrate(&dm_motor[ARM3],&custom_robot_data,ARM3_INDEX);
-	  	dm_motor_upgrate(&dm_motor[ARM4],&custom_robot_data,ARM4_INDEX);
-	  	dm_motor_upgrate(&dm_motor[ARM5],&custom_robot_data,ARM5_INDEX);
-	  	dm_motor_upgrate(&dm_motor[ARM6],&custom_robot_data,ARM6_INDEX);
+	  	dm_motor_upgrate(dm_motor,&custom_robot_data);
 
 		control_update();
 		osDelay(2);
@@ -70,6 +70,7 @@ void control_update(){
 			
 		}
 		else if(GET_SWITCH_LEFT() == RC_SW){
+
 
         dm_motor_ctrl(&hcan1,&dm_motor[ARM1],&dm4310para,3,1,0,0,0);
         dm_motor_ctrl(&hcan1,&dm_motor[ARM2],&dm4340para,15,4,0,0,0);

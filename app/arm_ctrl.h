@@ -19,6 +19,6 @@
 #define ARM5_INDEX           4
 #define ARM6_INDEX           5
 
-extern dm_motor_t dm_motor[8];
+extern dm_motor_t dm_motor[7];
 extern uint8_t ic_define_angle[256];
 #endif //ARM_ARM_CTRL_H

@@ -6,6 +6,7 @@
 #define ARM_DM_H
 #include "bsp_can.h"
 #include "referee.h"
+#include "../../bsp/ramp/ramp.h"
 
 #define MIT_MODE 			0x000
 #define POS_MODE			0x100
@@ -16,6 +17,8 @@
 #define KP_MAX 500.0f
 #define KD_MIN 0.0f
 #define KD_MAX 5.0f
+
+#define RAMP_K     0.005
 
 
 #define DM_4310_PMAX   12.5
@@ -77,14 +80,15 @@ typedef struct
 {
     motor_feedback_t feedback;
     motor_ctrl_t ctrl;
-
+    ramp_type_t ramp_data;     //斜坡数据
+    float ramp_out;               //斜坡输出
 }dm_motor_t;
 
-extern dm_motor_t dm_motor[8];
+extern dm_motor_t dm_motor[7];
 extern motorpara_t dm4310para;
 extern motorpara_t dm4340para;
 extern motorpara_t dm8009para;
-void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data,uint8_t index);
+void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data);
 void dm_motor_ctrl(hcan_t* hcan,dm_motor_t *motor,motorpara_t *para,float kp,float kd,float pos,float vel,float tor);
 void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float kd_set,float pos_set,float vel_set,float tor_set);
 void dm_motor_ctrl_send(hcan_t* hcan, dm_motor_t *motor,motorpara_t* para);
