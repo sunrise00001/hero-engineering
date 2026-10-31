@@ -34,12 +34,7 @@ void dm_cmd_init(void)
     osDelay(20);
     dm_motor_enable(&dm_motor[ARM6]);
 
-	save_pos_zero(ARM1);
-	save_pos_zero(ARM2);
-	save_pos_zero(ARM3);
-	save_pos_zero(ARM4);
-	save_pos_zero(ARM5);
-	save_pos_zero(ARM6);
+
 
     s_ramp_init(&dm_motor[ARM1].ramp_data,RAMP_K,dm_motor[ARM1].ctrl.pos_set,dm_motor[ARM1].feedback.pos);
 	s_ramp_init(&dm_motor[ARM2].ramp_data,RAMP_K,dm_motor[ARM2].ctrl.pos_set,dm_motor[ARM2].feedback.pos);
@@ -54,21 +49,19 @@ void ARM_CTRL(void *argument)//ÈÎÎñº¯Êý
 {
     osDelay(3000);
     dm_cmd_init();
-	motor_3508_init();
+	// motor_3508_init();
 	  while(1){
 
-	  	if (fabsf(motor_3508.current)>1000&&fabsf(motor_3508.speed)<20)
-	  	{
-	  		motor_3508.state = 0;
-	  	}
-
-	  	if (motor_3508.state ==1)
-	  	{
-	  		motor_3508_pid(&motor_3508,700);
-	  		motor3508_senddata(motor_3508.ctrl_iq);
-	  	}
-
-
+	  	// if (fabsf(motor_3508.current)>1000&&fabsf(motor_3508.speed)<20)
+	  	// {
+	  	// 	motor_3508.state = 0;
+	  	// }
+		  //
+	  	// if (motor_3508.state ==1)
+	  	// {
+	  	// 	motor_3508_pid(&motor_3508,700);
+	  	// 	motor3508_senddata(motor_3508.ctrl_iq);
+	  	// }
 
 	  	dm_motor_upgrate(dm_motor,&custom_robot_data);
 		control_update();
