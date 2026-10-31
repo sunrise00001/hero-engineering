@@ -19,6 +19,21 @@
 #define ARM5_INDEX           4
 #define ARM6_INDEX           5
 
+#define ARM1_POS_MAX         0
+#define ARM1_POS_MIN         0
+#define ARM2_POS_MAX         0
+#define ARM2_POS_MIN         0
+#define ARM3_POS_MAX         0
+#define ARM3_POS_MIN         0
+#define ARM4_POS_MAX         0
+#define ARM4_POS_MIN         0
+#define ARM5_POS_MAX         0
+#define ARM5_POS_MIN         0
+#define ARM6_POS_MAX         0
+#define ARM6_POS_MIN         0
+
 extern dm_motor_t dm_motor[7];
-extern uint8_t ic_define_angle[256];
+// extern uint8_t ic_define_angle[256];
+void control_update();
+void pos_limit(dm_motor_t *motor);
 #endif //ARM_ARM_CTRL_H

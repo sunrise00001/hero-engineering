@@ -10,28 +10,28 @@
 
 
 dm_motor_t dm_motor[7] = {0};
-void control_update(void);
+
 
 void dm_cmd_init(void)
 {
-    dm_motor_init(&dm_motor[ARM1],ARM1,mit_mode,0,0,0,0,0,DM_4310_PMAX,DM_4310_VMAX,DM_4310_TMAX);
-    dm_motor_init(&dm_motor[ARM2],ARM2,mit_mode,0,0,0,0,0,DM_4340_PMAX,DM_4340_VMAX,DM_4340_TMAX);
-    dm_motor_init(&dm_motor[ARM3],ARM3,mit_mode,0,0,0,0,0,DM_4310_PMAX,DM_4310_VMAX,DM_4310_TMAX);
-    dm_motor_init(&dm_motor[ARM4],ARM4,mit_mode,0,0,0,0,0,DM_4340_PMAX,DM_4340_VMAX,DM_4340_TMAX);
-    dm_motor_init(&dm_motor[ARM5],ARM5,mit_mode,0,0,0,0,0,DM_8009_PMAX,DM_8009_VMAX,DM_8009_TMAX);
-    dm_motor_init(&dm_motor[ARM6],ARM6,mit_mode,0,0,0,0,0,DM_8009_PMAX,DM_8009_VMAX,DM_8009_TMAX);
+    dm_motor_init(&dm_motor[ARM1],ARM1,mit_mode,0,0,0,0,0,DM_4310_PMAX,DM_4310_VMAX,DM_4310_TMAX,ARM1_POS_MAX,ARM1_POS_MIN);
+    dm_motor_init(&dm_motor[ARM2],ARM2,mit_mode,0,0,0,0,0,DM_4340_PMAX,DM_4340_VMAX,DM_4340_TMAX,ARM2_POS_MAX,ARM2_POS_MIN);
+    dm_motor_init(&dm_motor[ARM3],ARM3,mit_mode,0,0,0,0,0,DM_4310_PMAX,DM_4310_VMAX,DM_4310_TMAX,ARM3_POS_MAX,ARM3_POS_MIN);
+    dm_motor_init(&dm_motor[ARM4],ARM4,mit_mode,0,0,0,0,0,DM_4340_PMAX,DM_4340_VMAX,DM_4340_TMAX,ARM4_POS_MAX,ARM4_POS_MIN);
+    dm_motor_init(&dm_motor[ARM5],ARM5,mit_mode,0,0,0,0,0,DM_8009_PMAX,DM_8009_VMAX,DM_8009_TMAX,ARM5_POS_MAX,ARM5_POS_MIN);
+    dm_motor_init(&dm_motor[ARM6],ARM6,mit_mode,0,0,0,0,0,DM_8009_PMAX,DM_8009_VMAX,DM_8009_TMAX,ARM6_POS_MAX,ARM6_POS_MIN);
 
-    dm_motor_enable(&hcan1,&dm_motor[ARM1]);
+    dm_motor_enable(&dm_motor[ARM1]);
     osDelay(20);
-    dm_motor_enable(&hcan1,&dm_motor[ARM2]);
+    dm_motor_enable(&dm_motor[ARM2]);
     osDelay(20);
-    dm_motor_enable(&hcan1,&dm_motor[ARM3]);
+    dm_motor_enable(&dm_motor[ARM3]);
     osDelay(20);
-    dm_motor_enable(&hcan1,&dm_motor[ARM4]);
+    dm_motor_enable(&dm_motor[ARM4]);
     osDelay(20);
-    dm_motor_enable(&hcan1,&dm_motor[ARM5]);
+    dm_motor_enable(&dm_motor[ARM5]);
     osDelay(20);
-    dm_motor_enable(&hcan1,&dm_motor[ARM6]);
+    dm_motor_enable(&dm_motor[ARM6]);
 
     s_ramp_init(&dm_motor[ARM1].ramp_data,RAMP_K,dm_motor[ARM1].ctrl.pos_set,dm_motor[ARM1].feedback.pos);
 	s_ramp_init(&dm_motor[ARM2].ramp_data,RAMP_K,dm_motor[ARM2].ctrl.pos_set,dm_motor[ARM2].feedback.pos);
@@ -88,4 +88,15 @@ void control_update(){
         dm_motor_ctrl(&dm_motor[ARM5],40,15,dm_motor[ARM5].ctrl.pos_set,0,0);
         dm_motor_ctrl(&dm_motor[ARM6],0,0,dm_motor[ARM6].ctrl.pos_set,0,0);
 		}
+}
+
+
+void pos_limit(dm_motor_t *motor)
+{
+	if (motor->ctrl.pos_set > motor->ctrl.pos_max)
+		motor->ctrl.pos_set = motor->ctrl.pos_max;
+
+	if (motor->ctrl.pos_set < motor->ctrl.pos_min)
+		motor->ctrl.pos_set = motor->ctrl.pos_min;
+
 }

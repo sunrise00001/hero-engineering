@@ -48,25 +48,25 @@ void can_filter_init(void)
 * @details:    	发送数据
 ************************************************************************
 **/
-uint8_t canx_send_data(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t *data, uint32_t len)
-{
-	CAN_TxHeaderTypeDef	tx_header;
-
-    uint32_t mailbox;
-	tx_header.StdId = id;
-	tx_header.ExtId = 0;
-	tx_header.IDE   = 0;
-	tx_header.RTR   = 0;
-	tx_header.DLC   = len;
-
-	/*找到空的发送邮箱，把数据发送出去*/
-	if(HAL_CAN_AddTxMessage(hcan, &tx_header, data, (uint32_t*)CAN_TX_MAILBOX0) != HAL_OK) {
-		if(HAL_CAN_AddTxMessage(hcan, &tx_header, data, (uint32_t*)CAN_TX_MAILBOX1) != HAL_OK) {
-			HAL_CAN_AddTxMessage(hcan, &tx_header, data, (uint32_t*)CAN_TX_MAILBOX2);
-		}
-	}
-	return 0;
-}
+// uint8_t canx_send_data(CAN_HandleTypeDef *hcan, uint16_t id, uint8_t *data, uint32_t len)
+// {
+// 	CAN_TxHeaderTypeDef	tx_header;
+//
+//     uint32_t mailbox;
+// 	tx_header.StdId = id;
+// 	tx_header.ExtId = 0;
+// 	tx_header.IDE   = 0;
+// 	tx_header.RTR   = 0;
+// 	tx_header.DLC   = len;
+//
+// 	/*找到空的发送邮箱，把数据发送出去*/
+// 	if(HAL_CAN_AddTxMessage(hcan, &tx_header, data, (uint32_t*)CAN_TX_MAILBOX0) != HAL_OK) {
+// 		if(HAL_CAN_AddTxMessage(hcan, &tx_header, data, (uint32_t*)CAN_TX_MAILBOX1) != HAL_OK) {
+// 			HAL_CAN_AddTxMessage(hcan, &tx_header, data, (uint32_t*)CAN_TX_MAILBOX2);
+// 		}
+// 	}
+// 	return 0;
+// }
 /**
 ************************************************************************
 * @brief:      	canx_bsp_receive(CAN_HandleTypeDef *hcan, uint8_t *buf)
