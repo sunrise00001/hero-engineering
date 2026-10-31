@@ -80,6 +80,12 @@ void control_update(){
         dm_motor_ctrl(&dm_motor[ARM6],0,0,0,0,0);
 	}
 		else{
+			pos_limit(&dm_motor[ARM1]);
+			pos_limit(&dm_motor[ARM2]);
+			pos_limit(&dm_motor[ARM3]);
+			pos_limit(&dm_motor[ARM4]);
+			pos_limit(&dm_motor[ARM5]);
+			pos_limit(&dm_motor[ARM6]);
 
         dm_motor_ctrl(&dm_motor[ARM1],3,1,dm_motor[ARM1].ctrl.pos_set,0,0);
         dm_motor_ctrl(&dm_motor[ARM2],8,3,dm_motor[ARM2].ctrl.pos_set,0,0);
@@ -94,9 +100,14 @@ void control_update(){
 void pos_limit(dm_motor_t *motor)
 {
 	if (motor->ctrl.pos_set > motor->ctrl.pos_max)
+	{
 		motor->ctrl.pos_set = motor->ctrl.pos_max;
+	}
 
 	if (motor->ctrl.pos_set < motor->ctrl.pos_min)
+	{
 		motor->ctrl.pos_set = motor->ctrl.pos_min;
+	}
+
 
 }
