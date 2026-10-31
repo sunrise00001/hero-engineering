@@ -40,6 +40,7 @@ void dm_motor_init(dm_motor_t *motor,uint16_t id,uint8_t mode,float kp_set,float
 
 void dm_motor_ctrl(dm_motor_t *motor,float kp,float kd,float pos,float vel,float tor)
 {
+        pos_limit(motor);
         motor->ramp_out= s_ramp_calc(&motor->ramp_data,pos);              //斜坡
 
         CAN_TxHeaderTypeDef	tx_header;

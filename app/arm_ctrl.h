@@ -19,16 +19,16 @@
 #define ARM5_INDEX           4
 #define ARM6_INDEX           5
 
-#define ARM1_POS_MAX         0
-#define ARM1_POS_MIN         0
-#define ARM2_POS_MAX         0
-#define ARM2_POS_MIN         0
-#define ARM3_POS_MAX         0
-#define ARM3_POS_MIN         0
-#define ARM4_POS_MAX         0
-#define ARM4_POS_MIN         0
-#define ARM5_POS_MAX         0
-#define ARM5_POS_MIN         0
+#define ARM1_POS_MAX         -3.14
+#define ARM1_POS_MIN         3.14
+#define ARM2_POS_MAX         1.8
+#define ARM2_POS_MIN         -1.8
+#define ARM3_POS_MAX         1.2
+#define ARM3_POS_MIN         -4
+#define ARM4_POS_MAX         0.2
+#define ARM4_POS_MIN         -2
+#define ARM5_POS_MAX         0.05
+#define ARM5_POS_MIN         -2.5
 #define ARM6_POS_MAX         0
 #define ARM6_POS_MIN         0
 
