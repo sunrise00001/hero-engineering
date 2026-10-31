@@ -29,6 +29,9 @@ typedef struct
     fp32 frame_period;    // 调用更新函数对应的时间间隔，单位：s
 } first_order_filter_type_t;
 
+
+float fabsf(float a);
+
 /** @brief 估算 1 / sqrt(num)，num 应为正的有限值。 */
 extern fp32 invSqrt(fp32 num);
 

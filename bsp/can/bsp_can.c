@@ -28,6 +28,7 @@ void can_filter_init(void)
     can_filter_st.FilterMaskIdLow = 0x0000;
     can_filter_st.FilterBank = 0;
     can_filter_st.FilterFIFOAssignment = CAN_RX_FIFO0;
+	can_filter_st.SlaveStartFilterBank = 14;
 	HAL_CAN_ConfigFilter(&hcan1, &can_filter_st);
 
 	HAL_CAN_Start(&hcan1);

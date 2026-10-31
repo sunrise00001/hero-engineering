@@ -233,3 +233,19 @@ fp32 theta_format(fp32 Ang)
 {
     return loop_fp32_constrain(Ang, -180.0f, 180.0f);
 }
+
+float fabsf(float a)
+{
+    if (a < 0)
+    {
+        return -a;
+    }
+    if (a >= 0)
+    {
+        return a;
+    }
+
+}
+
+
+

@@ -45,6 +45,10 @@ add_executable(${CMAKE_PROJECT_NAME}
         bsp/ramp/ramp.h
         bsp/user_lib.c
         bsp/user_lib.h
+        bsp/pid/pid.c
+        bsp/pid/pid.h
+        modules/motor/3508.c
+        modules/motor/3508.h
 
 
 )
@@ -78,8 +82,10 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/motor
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/RC
     ${CMAKE_CURRENT_SOURCE_DIR}/modules/define_rx
+    ${CMAKE_CURRENT_SOURCE_DIR}/bsp
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/can
     ${CMAKE_CURRENT_SOURCE_DIR}/bsp/tool
+    ${CMAKE_CURRENT_SOURCE_DIR}/bsp/pid
 )
 
 # Add project symbols (macros)

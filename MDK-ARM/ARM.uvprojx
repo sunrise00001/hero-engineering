@@ -341,7 +341,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../app;../bsp;../bsp/can;../bsp/ramp;../bsp/serial;../bsp/tool;../modules/define_rx;../modules/motor;../modules/RC</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../app;../bsp;../bsp/can;../bsp/ramp;../bsp/serial;../bsp/tool;../bsp/pid;../modules/define_rx;../modules/motor;../modules/RC</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -610,6 +610,11 @@
         <Group>
           <GroupName>bsp</GroupName>
           <Files>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\bsp\pid\pid.c</FilePath>
+            </File>
             <File>
               <FileName>bsp_can.c</FileName>
               <FileType>1</FileType>

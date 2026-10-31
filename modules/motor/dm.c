@@ -6,6 +6,7 @@
 #include <string.h>
 
 
+#include "3508.h"
 #include "arm_ctrl.h"
 #include "can.h"
 #include "cmsis_os2.h"
@@ -89,17 +90,25 @@ void can1_rx_callback(void)
     uint16_t rec_id;
     uint8_t rx_data[8] = {0};
     canx_receive(&hcan1, &rec_id, rx_data);
+
+    if (rec_id>=0x201&&rec_id<=0x208)
+    {
+        if (rec_id == 0x202)
+        {
+            motor_3508feedback(rx_data);
+        }
+        return;
+    }
+
     uint8_t temp_id = (rx_data[0])&0x0F;
     switch (temp_id)
     {
-
         case 0x01: dm_motor_feedback(&dm_motor[1],rx_data); break;
         case 0x02: dm_motor_feedback(&dm_motor[2],rx_data); break;
         case 0x03: dm_motor_feedback(&dm_motor[3],rx_data); break;
         case 0x04: dm_motor_feedback(&dm_motor[4],rx_data); break;
         case 0x05: dm_motor_feedback(&dm_motor[5],rx_data); break;
         case 0x06: dm_motor_feedback(&dm_motor[6],rx_data); break;
-
     }
 }
 
@@ -175,7 +184,7 @@ void dm_motor_feedback(dm_motor_t *motor, uint8_t *rx_data)
 
 
 /****************************保存零点*************************************/
-void save_pos_zero(hcan_t* hcan, uint16_t motor_id,uint16_t mode_id)
+void save_pos_zero(uint16_t motor_id)
 {
     CAN_TxHeaderTypeDef	tx_header;
     uint32_t mailbox;

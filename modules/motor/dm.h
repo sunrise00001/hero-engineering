@@ -81,7 +81,7 @@ typedef struct
     ramp_type_t ramp_data;     //斜坡数据
     float ramp_out;               //斜坡输出
 }dm_motor_t;
-
+void save_pos_zero(uint16_t motor_id);
 extern dm_motor_t dm_motor[7];
 void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data);
 void dm_motor_ctrl(dm_motor_t *motor,float kp,float kd,float pos,float vel,float tor);
