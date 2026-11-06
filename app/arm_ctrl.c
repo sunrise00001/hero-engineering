@@ -8,7 +8,9 @@
 #include "unitree_a1.h"
 #include "RemoteController.h"
 #include "3508.h"
+#include "usart.h"
 #include "user_lib.h"
+#include "serial/bsp_serial.h"
 
 dm_motor_t dm_motor[7] = {0};
 
@@ -35,13 +37,12 @@ void dm_cmd_init(void)
     dm_motor_enable(&dm_motor[ARM6]);
 
 
-
-    s_ramp_init(&dm_motor[ARM1].ramp_data,RAMP_K,dm_motor[ARM1].ctrl.pos_set,dm_motor[ARM1].feedback.pos);
-	s_ramp_init(&dm_motor[ARM2].ramp_data,RAMP_K,dm_motor[ARM2].ctrl.pos_set,dm_motor[ARM2].feedback.pos);
-	s_ramp_init(&dm_motor[ARM3].ramp_data,RAMP_K,dm_motor[ARM3].ctrl.pos_set,dm_motor[ARM3].feedback.pos);
-	s_ramp_init(&dm_motor[ARM4].ramp_data,RAMP_K,dm_motor[ARM4].ctrl.pos_set,dm_motor[ARM4].feedback.pos);
-	s_ramp_init(&dm_motor[ARM5].ramp_data,RAMP_K,dm_motor[ARM5].ctrl.pos_set,dm_motor[ARM5].feedback.pos);
-	s_ramp_init(&dm_motor[ARM6].ramp_data,RAMP_K,dm_motor[ARM6].ctrl.pos_set,dm_motor[ARM6].feedback.pos);
+    s_ramp_init(&dm_motor[ARM1].ramp_data,RAMP_K2,dm_motor[ARM1].ctrl.pos_set,dm_motor[ARM1].feedback.pos);
+	s_ramp_init(&dm_motor[ARM2].ramp_data,RAMP_K2,dm_motor[ARM2].ctrl.pos_set,dm_motor[ARM2].feedback.pos);
+	s_ramp_init(&dm_motor[ARM3].ramp_data,RAMP_K1,dm_motor[ARM3].ctrl.pos_set,dm_motor[ARM3].feedback.pos);
+	s_ramp_init(&dm_motor[ARM4].ramp_data,RAMP_K1,dm_motor[ARM4].ctrl.pos_set,dm_motor[ARM4].feedback.pos);
+	s_ramp_init(&dm_motor[ARM5].ramp_data,RAMP_K1,dm_motor[ARM5].ctrl.pos_set,dm_motor[ARM5].feedback.pos);
+	s_ramp_init(&dm_motor[ARM6].ramp_data,RAMP_K1,dm_motor[ARM6].ctrl.pos_set,dm_motor[ARM6].feedback.pos);
 };
 
 
@@ -49,20 +50,11 @@ void ARM_CTRL(void *argument)//任务函数
 {
     osDelay(3000);
     dm_cmd_init();
-	// motor_3508_init();
+	motor_3508_init();
+
 	  while(1){
 
-	  	// if (fabsf(motor_3508.current)>1000&&fabsf(motor_3508.speed)<20)
-	  	// {
-	  	// 	motor_3508.state = 0;
-	  	// }
-		  //
-	  	// if (motor_3508.state ==1)
-	  	// {
-	  	// 	motor_3508_pid(&motor_3508,700);
-	  	// 	motor3508_senddata(motor_3508.ctrl_iq);
-	  	// }
-
+	  	control_gripper_update();
 	  	dm_motor_upgrate(dm_motor,&custom_robot_data);
 		control_update();
 		osDelay(2);
@@ -73,7 +65,6 @@ void ARM_CTRL(void *argument)//任务函数
 
 void control_update(){
      if (GET_SWITCH_LEFT() == RC_SW_DOWN) {
-
 
      	dm_motor_ctrl(&dm_motor[ARM1],0,0,0,0,0);
         dm_motor_ctrl(&dm_motor[ARM2],0,0,0,0,0);
@@ -90,10 +81,10 @@ void control_update(){
         dm_motor_ctrl(&dm_motor[ARM2],15,4,0,0,0);
         dm_motor_ctrl(&dm_motor[ARM3],5,2,0,0,0);
         dm_motor_ctrl(&dm_motor[ARM4],55,10,0,0,10);
-        dm_motor_ctrl(&dm_motor[ARM5],0,0,0,0,0);
+        dm_motor_ctrl(&dm_motor[ARM5],40,3,0,0,0);
         dm_motor_ctrl(&dm_motor[ARM6],0,0,0,0,0);
 	}
-		else{
+		else {
 			pos_limit(&dm_motor[ARM1]);
 			pos_limit(&dm_motor[ARM2]);
 			pos_limit(&dm_motor[ARM3]);
@@ -101,13 +92,33 @@ void control_update(){
 			pos_limit(&dm_motor[ARM5]);
 			pos_limit(&dm_motor[ARM6]);
 
-        dm_motor_ctrl(&dm_motor[ARM1],3,1,dm_motor[ARM1].ctrl.pos_set,0,0);
-        dm_motor_ctrl(&dm_motor[ARM2],8,3,dm_motor[ARM2].ctrl.pos_set,0,0);
+        dm_motor_ctrl(&dm_motor[ARM1],20,3,dm_motor[ARM1].ctrl.pos_set,0,0);
+        dm_motor_ctrl(&dm_motor[ARM2],10,3,dm_motor[ARM2].ctrl.pos_set,0,0);
         dm_motor_ctrl(&dm_motor[ARM3],5,2,dm_motor[ARM3].ctrl.pos_set,0,0);
-        dm_motor_ctrl(&dm_motor[ARM4],45,15,dm_motor[ARM4].ctrl.pos_set,0,2);
-        dm_motor_ctrl(&dm_motor[ARM5],40,15,dm_motor[ARM5].ctrl.pos_set,0,0);
-        dm_motor_ctrl(&dm_motor[ARM6],0,0,dm_motor[ARM6].ctrl.pos_set,0,0);
+        dm_motor_ctrl(&dm_motor[ARM4],60,5,dm_motor[ARM4].ctrl.pos_set,0,2);
+        dm_motor_ctrl(&dm_motor[ARM5],40,5,dm_motor[ARM5].ctrl.pos_set,0,0);
+        dm_motor_ctrl(&dm_motor[ARM6],30,3,dm_motor[ARM6].ctrl.pos_set,0,0);
 		}
+
+}
+
+void control_gripper_update()
+{
+	if (GET_SWITCH_LEFT() == RC_SW_UP&&GET_SWITCH_RIGHT() == RC_SW_DOWN)
+	{
+		motor_3508_pid(&motor_3508,200);
+		motor3508_senddata(motor_3508.ctrl_iq);
+	}
+	if (GET_SWITCH_LEFT() == RC_SW_UP&&GET_SWITCH_RIGHT() == RC_SW_UP)
+	{
+		motor_3508_pid(&motor_3508,-200);   //负往外
+		motor3508_senddata(motor_3508.ctrl_iq);
+	}
+	if (GET_SWITCH_LEFT() == RC_SW_UP&&GET_SWITCH_RIGHT() == RC_SW)
+	{
+		motor_3508_pid(&motor_3508,0);
+		motor3508_senddata(motor_3508.ctrl_iq);
+	}
 }
 
 
@@ -122,6 +133,5 @@ void pos_limit(dm_motor_t *motor)
 	{
 		motor->ctrl.pos_set = motor->ctrl.pos_min;
 	}
-
-
 }
+	

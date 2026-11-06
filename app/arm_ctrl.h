@@ -29,11 +29,12 @@
 #define ARM4_POS_MIN         -2
 #define ARM5_POS_MAX         0.05
 #define ARM5_POS_MIN         -2.5
-#define ARM6_POS_MAX         0
-#define ARM6_POS_MIN         0
+#define ARM6_POS_MAX         3.14
+#define ARM6_POS_MIN         -3.14
 
 extern dm_motor_t dm_motor[7];
 // extern uint8_t ic_define_angle[256];
+void control_gripper_update();
 void control_update();
 void pos_limit(dm_motor_t *motor);
 #endif //ARM_ARM_CTRL_H

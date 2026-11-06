@@ -14,7 +14,9 @@
 #define KD_MIN 0.0f
 #define KD_MAX 5.0f
 
-#define RAMP_K     0.005
+
+#define RAMP_K1     0.01
+#define RAMP_K2     0.04
 
 
 #define DM_4310_PMAX   12.5

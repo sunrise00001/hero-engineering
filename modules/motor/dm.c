@@ -77,7 +77,7 @@ void dm_motor_ctrl(dm_motor_t *motor,float kp,float kd,float pos,float vel,float
 void dm_motor_upgrate(dm_motor_t *motor,message_arm *custom_robot_data)
 {
     dm_motor[ARM1].ctrl.pos_set = - custom_robot_data->mt_ang.angle[0]*PI/180.f;
-    dm_motor[ARM2].ctrl.pos_set = - custom_robot_data->mt_ang.angle[1]*PI/180.f;
+    dm_motor[ARM2].ctrl.pos_set =  custom_robot_data->mt_ang.angle[1]*PI/180.f;
     dm_motor[ARM3].ctrl.pos_set = - custom_robot_data->mt_ang.angle[2]*PI/180.f;
     dm_motor[ARM4].ctrl.pos_set = - custom_robot_data->mt_ang.angle[3]*PI/180.f;
     dm_motor[ARM5].ctrl.pos_set = - custom_robot_data->mt_ang.angle[4]*PI/180.f;
@@ -93,7 +93,7 @@ void can1_rx_callback(void)
 
     if (rec_id>=0x201&&rec_id<=0x208)
     {
-        if (rec_id == 0x202)
+        if (rec_id == 0x203)
         {
             motor_3508feedback(rx_data);
         }
